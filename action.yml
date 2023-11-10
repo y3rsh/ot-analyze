@@ -1,6 +1,6 @@
 ---
 name: 'ot-analyze'
-author: 'github'
+author: 'y3rsh'
 description: 'A GitHub Action to analyze Opentrons protocols'
 runs:
   using: 'docker'
