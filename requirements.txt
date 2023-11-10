@@ -12,7 +12,7 @@ opentrons==7.0.2
 opentrons-shared-data==7.0.2
 pipenv==2021.5.29
 platformdirs==2.5.3
-pydantic==1.8.2
+pydantic==2.4.2
 pyrsistent==0.20.0
 pyserial==3.5
 ruff==0.1.5
