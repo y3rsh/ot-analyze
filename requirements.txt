@@ -10,7 +10,7 @@ jsonschema==3.0.2
 numpy==1.26.1
 opentrons==7.0.2
 opentrons-shared-data==7.0.2
-pipenv==2021.5.29
+pipenv==2023.10.24
 platformdirs==2.5.3
 pydantic==1.8.2
 pyrsistent==0.20.0
