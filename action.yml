@@ -1,0 +1,10 @@
+---
+name: 'ot-analyze'
+author: 'github'
+description: 'A GitHub Action to analyze Opentrons protocols'
+runs:
+  using: 'docker'
+  image: 'docker://ghcr.io/y3rsh/ot-analyze'
+branding:
+  icon: 'check-square'
+  color: 'white'
