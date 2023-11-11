@@ -1,5 +1,4 @@
 FROM python:3.10-slim
-LABEL org.opencontainers.image.source https://github.com/y3rsh/ot-analyze
 
 WORKDIR /action/workspace
 COPY requirements.txt *.py /action/workspace/

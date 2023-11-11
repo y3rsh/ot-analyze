@@ -1,4 +1,4 @@
-name: Test
+name: Lint and Test
 
 on:
   push:
@@ -20,7 +20,6 @@ jobs:
         cache-dependency-path: 'requirements.txt'
     - name: Install dependencies
       run: make setup
-    - name: test
     - name: Run test
       run: make test
     - name: Upload test results
