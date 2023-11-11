@@ -39,6 +39,6 @@ black: activate
 
 .PHONY: ruff
 ruff: activate
-	python -m ruff .
+	python -m ruff . --fix --unsafe-fixes
 
 
