@@ -41,4 +41,16 @@ black: activate
 ruff: activate
 	python -m ruff . --fix --unsafe-fixes
 
+.PHONY: ot7.0.2
+ot7.0.2: activate
+	python -m pip install opentrons==7.0.2
+	python -m pip install 'opentrons-hardware @ git+https://github.com/Opentrons/opentrons@f6b79cb8d3eb3ecd4a1c794cfbdb25cee199526d#subdirectory=hardware'
 
+.PHONY: test
+test: activate
+	python -m pytest -vv --html=report.html tests/
+
+.PHONY: check
+check: activate
+	python -m black --check .
+	python -m ruff .

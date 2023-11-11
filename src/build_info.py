@@ -1,6 +1,6 @@
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import List, Literal, Optional
-from abc import ABC, abstractmethod
 
 Variant = Literal["internal-release", "release"]
 BuildType = Literal["develop", "release"]
@@ -57,18 +57,14 @@ class InternalReleaseBranchCheck(BuildCheck):
 
 class ReleaseBranchCheck(BuildCheck):
     def check(self, github_event_type: str, github_ref: str) -> Optional[BuildInfo]:
-        if github_ref.startswith("refs/heads/release") or github_ref.startswith(
-            "refs/heads/chore_release"
-        ):
+        if github_ref.startswith("refs/heads/release") or github_ref.startswith("refs/heads/chore_release"):
             return BuildInfo(variants=["release"], build_type="develop")
 
 
 class EdgeBranchCheck(BuildCheck):
     def check(self, github_event_type: str, github_ref: str) -> Optional[BuildInfo]:
         if github_ref == "refs/heads/edge":
-            return BuildInfo(
-                variants=["release", "internal-release"], build_type="develop"
-            )
+            return BuildInfo(variants=["release", "internal-release"], build_type="develop")
 
 
 class AppBuildInternalSuffixCheck(BuildCheck):
@@ -86,9 +82,7 @@ class AppBuildSuffixCheck(BuildCheck):
 class AppBuildBothSuffixCheck(BuildCheck):
     def check(self, github_event_type: str, github_ref: str) -> Optional[BuildInfo]:
         if github_ref.endswith("app-build-both"):
-            return BuildInfo(
-                variants=["release", "internal-release"], build_type="develop"
-            )
+            return BuildInfo(variants=["release", "internal-release"], build_type="develop")
 
 
 # Function to process build type checks

@@ -1,11 +1,15 @@
 import subprocess
-from build_info import BuildInfo
+from pathlib import Path
+
+from src.build_info import BuildInfo
+
+script_path = Path(Path(__file__).parent, "release-type.sh")
 
 
 def run_bash_script(event_type, ref):
     try:
         result = subprocess.run(
-            ["./release-type.sh", event_type, ref],
+            [script_path.resolve(), event_type, ref],
             capture_output=True,
             text=True,
             check=True,
@@ -27,6 +31,4 @@ def parse_bash_output(output) -> BuildInfo:
             # Parse build type
             parsed_output["build_type"] = value
 
-    return BuildInfo(
-        variants=parsed_output["variants"], build_type=parsed_output["build_type"]
-    )
+    return BuildInfo(variants=parsed_output["variants"], build_type=parsed_output["build_type"])

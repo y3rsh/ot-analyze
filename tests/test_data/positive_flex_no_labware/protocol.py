@@ -1,7 +1,6 @@
-from opentrons import protocol_api
-
-
 import inspect
+
+from opentrons import protocol_api
 
 metadata = {
     "protocolName": "OT3 ABR KAPA Library Quant v2",
@@ -61,20 +60,14 @@ def run(protocol: protocol_api.ProtocolContext):
         "nest_96_wellplate_100ul_pcr_full_skirt", "1"
     )  # <--- Actually an Eppendorf 96 well, same dimensions
     reservoir = protocol.load_labware("nest_12_reservoir_15ml", "2")
-    dilution_plate_1 = protocol.load_labware(
-        "opentrons_96_aluminumblock_biorad_wellplate_200ul", "3"
-    )
+    dilution_plate_1 = protocol.load_labware("opentrons_96_aluminumblock_biorad_wellplate_200ul", "3")
 
     tiprack_50_1 = protocol.load_labware("opentrons_flex_96_tiprack_50ul", "4")
     tiprack_200_1 = protocol.load_labware("opentrons_flex_96_tiprack_200ul", "5")
     tiprack_50_2 = protocol.load_labware("opentrons_flex_96_tiprack_50ul", "6")
 
-    reagent_plate = protocol.load_labware(
-        "nest_96_wellplate_100ul_pcr_full_skirt", "7"
-    )  # <--- NEST Strip Tubes
-    dilution_plate_2 = protocol.load_labware(
-        "opentrons_96_aluminumblock_biorad_wellplate_200ul", "8"
-    )
+    reagent_plate = protocol.load_labware("nest_96_wellplate_100ul_pcr_full_skirt", "7")  # <--- NEST Strip Tubes
+    dilution_plate_2 = protocol.load_labware("opentrons_96_aluminumblock_biorad_wellplate_200ul", "8")
     if FORMAT == "96":
         qpcrplate_1 = protocol.load_labware(
             "nest_96_wellplate_100ul_pcr_full_skirt", "9"
@@ -83,12 +76,8 @@ def run(protocol: protocol_api.ProtocolContext):
             "nest_96_wellplate_100ul_pcr_full_skirt", "10"
         )  # <--- Actually an Eppendorf 96 well, same dimensions
     if FORMAT == "384":
-        qpcrplate_1 = protocol.load_labware(
-            "corning_384_wellplate_112ul_flat", "9"
-        )  # <--- Actually an Eppendorf 96 well, same dimensions
-        qpcrplate_2 = protocol.load_labware(
-            "corning_384_wellplate_112ul_flat", "10"
-        )  # <--- Actually an Eppendorf 96 well, same dimensions
+        qpcrplate_1 = protocol.load_labware("corning_384_wellplate_112ul_flat", "9")  # <--- Actually an Eppendorf 96 well, same dimensions
+        qpcrplate_2 = protocol.load_labware("corning_384_wellplate_112ul_flat", "10")  # <--- Actually an Eppendorf 96 well, same dimensions
 
     # REAGENT PLATE
     STD_1 = reagent_plate["A1"]
@@ -100,12 +89,8 @@ def run(protocol: protocol_api.ProtocolContext):
     DIL = reservoir["A5"]
 
     # pipette
-    p50 = protocol.load_instrument(
-        "flex_8channel_50", "left", tip_racks=[tiprack_50_1, tiprack_50_2]
-    )
-    p1000 = protocol.load_instrument(
-        "flex_8channel_1000", "right", tip_racks=[tiprack_200_1]
-    )
+    p50 = protocol.load_instrument("flex_8channel_50", "left", tip_racks=[tiprack_50_1, tiprack_50_2])
+    p1000 = protocol.load_instrument("flex_8channel_1000", "right", tip_racks=[tiprack_200_1])
 
     # samples
     src_file_path = inspect.getfile(lambda: None)
@@ -143,9 +128,7 @@ def run(protocol: protocol_api.ProtocolContext):
         protocol.comment("--> Dispensing Diluent Part 1 and Part 2")
         protocol.comment("==============================================")
         p1000.pick_up_tip()
-        if (
-            samplecolumns >= 1
-        ):  # -----------------------------------------------------------------------------------------
+        if samplecolumns >= 1:  # -----------------------------------------------------------------------------------------
             X = "A2"
             Y = "A6"
             p1000.move_to(DIL.bottom(z=p1000_offset_Res))
@@ -153,25 +136,19 @@ def run(protocol: protocol_api.ProtocolContext):
             p1000.move_to(DIL.top(z=+5))
             protocol.delay(seconds=2)
             p1000.aspirate(200, DIL.bottom(z=p1000_offset_Res), rate=0.25)
-            p1000.dispense(
-                98, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.25
-            )
+            p1000.dispense(98, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.25)
             p1000.default_speed = 5
             p1000.move_to(dilution_plate_1[X].top())
             protocol.delay(seconds=2)
             p1000.default_speed = 400
-            p1000.dispense(
-                95, dilution_plate_1[Y].bottom(z=p1000_offset_Temp), rate=0.25
-            )
+            p1000.dispense(95, dilution_plate_1[Y].bottom(z=p1000_offset_Temp), rate=0.25)
             p1000.default_speed = 5
             p1000.move_to(dilution_plate_1[Y].top())
             protocol.delay(seconds=2)
             p1000.default_speed = 400
             p1000.move_to(DIL.top())
             p1000.blow_out()
-        if (
-            samplecolumns >= 2
-        ):  # -----------------------------------------------------------------------------------------
+        if samplecolumns >= 2:  # -----------------------------------------------------------------------------------------
             X = "A3"
             Y = "A7"
             p1000.move_to(DIL.bottom(z=p1000_offset_Res))
@@ -179,25 +156,19 @@ def run(protocol: protocol_api.ProtocolContext):
             p1000.move_to(DIL.top(z=+5))
             protocol.delay(seconds=2)
             p1000.aspirate(200, DIL.bottom(z=p1000_offset_Res), rate=0.25)
-            p1000.dispense(
-                98, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.25
-            )
+            p1000.dispense(98, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.25)
             p1000.default_speed = 5
             p1000.move_to(dilution_plate_1[X].top())
             protocol.delay(seconds=2)
             p1000.default_speed = 400
-            p1000.dispense(
-                95, dilution_plate_1[Y].bottom(z=p1000_offset_Temp), rate=0.25
-            )
+            p1000.dispense(95, dilution_plate_1[Y].bottom(z=p1000_offset_Temp), rate=0.25)
             p1000.default_speed = 5
             p1000.move_to(dilution_plate_1[Y].top())
             protocol.delay(seconds=2)
             p1000.default_speed = 400
             p1000.move_to(DIL.top())
             p1000.blow_out()
-        if (
-            samplecolumns >= 3
-        ):  # -----------------------------------------------------------------------------------------
+        if samplecolumns >= 3:  # -----------------------------------------------------------------------------------------
             X = "A4"
             Y = "A8"
             p1000.move_to(DIL.bottom(z=p1000_offset_Res))
@@ -205,16 +176,12 @@ def run(protocol: protocol_api.ProtocolContext):
             p1000.move_to(DIL.top(z=+5))
             protocol.delay(seconds=2)
             p1000.aspirate(200, DIL.bottom(z=p1000_offset_Res), rate=0.25)
-            p1000.dispense(
-                98, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.25
-            )
+            p1000.dispense(98, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.25)
             p1000.default_speed = 5
             p1000.move_to(dilution_plate_1[X].top())
             protocol.delay(seconds=2)
             p1000.default_speed = 400
-            p1000.dispense(
-                95, dilution_plate_1[Y].bottom(z=p1000_offset_Temp), rate=0.25
-            )
+            p1000.dispense(95, dilution_plate_1[Y].bottom(z=p1000_offset_Temp), rate=0.25)
             p1000.default_speed = 5
             p1000.move_to(dilution_plate_1[Y].top())
             protocol.delay(seconds=2)
@@ -226,27 +193,21 @@ def run(protocol: protocol_api.ProtocolContext):
         protocol.comment("==============================================")
         protocol.comment("--> Adding Sample to Diluent Part 1")
         protocol.comment("==============================================")
-        if (
-            samplecolumns >= 1
-        ):  # -----------------------------------------------------------------------------------------
+        if samplecolumns >= 1:  # -----------------------------------------------------------------------------------------
             X = INICOLUMN1
             Y = "A2"
             p50.pick_up_tip()
             p50.aspirate(2, source_plate[X].bottom(z=p50_offset_Mag), rate=0.25)
             p50.dispense(2, dilution_plate_1[Y].center(), rate=0.5)
             p50.drop_tip() if DRYRUN == "NO" else p50.return_tip()
-        if (
-            samplecolumns >= 2
-        ):  # -----------------------------------------------------------------------------------------
+        if samplecolumns >= 2:  # -----------------------------------------------------------------------------------------
             X = INICOLUMN2
             Y = "A3"
             p50.pick_up_tip()
             p50.aspirate(2, source_plate[X].bottom(z=p50_offset_Mag), rate=0.25)
             p50.dispense(2, dilution_plate_1[Y].center(), rate=0.5)
             p50.drop_tip() if DRYRUN == "NO" else p50.return_tip()
-        if (
-            samplecolumns >= 3
-        ):  # -----------------------------------------------------------------------------------------
+        if samplecolumns >= 3:  # -----------------------------------------------------------------------------------------
             X = INICOLUMN3
             Y = "A4"
             p50.pick_up_tip()
@@ -255,9 +216,7 @@ def run(protocol: protocol_api.ProtocolContext):
             p50.drop_tip() if DRYRUN == "NO" else p50.return_tip()
 
         protocol.comment("--> Mixing")
-        if (
-            samplecolumns >= 1
-        ):  # -----------------------------------------------------------------------------------------
+        if samplecolumns >= 1:  # -----------------------------------------------------------------------------------------
             X = "A2"
             p1000.pick_up_tip()
             p1000.move_to(dilution_plate_1[X].bottom(z=p1000_offset_Temp))
@@ -267,9 +226,7 @@ def run(protocol: protocol_api.ProtocolContext):
             protocol.delay(seconds=2)
             p1000.default_speed = 400
             p1000.drop_tip() if DRYRUN == "NO" else p1000.return_tip()
-        if (
-            samplecolumns >= 2
-        ):  # -----------------------------------------------------------------------------------------
+        if samplecolumns >= 2:  # -----------------------------------------------------------------------------------------
             X = "A3"
             p1000.pick_up_tip()
             p1000.move_to(dilution_plate_1[X].bottom(z=p1000_offset_Temp))
@@ -280,9 +237,7 @@ def run(protocol: protocol_api.ProtocolContext):
             protocol.delay(seconds=2)
             p1000.default_speed = 400
             p1000.drop_tip() if DRYRUN == "NO" else p1000.return_tip()
-        if (
-            samplecolumns >= 3
-        ):  # -----------------------------------------------------------------------------------------
+        if samplecolumns >= 3:  # -----------------------------------------------------------------------------------------
             X = "A4"
             p1000.pick_up_tip()
             p1000.move_to(dilution_plate_1[X].bottom(z=p1000_offset_Temp))
@@ -296,27 +251,21 @@ def run(protocol: protocol_api.ProtocolContext):
         protocol.comment("==============================================")
         protocol.comment("--> Adding Diluted Sample to Diluent Part 2")
         protocol.comment("==============================================")
-        if (
-            samplecolumns >= 1
-        ):  # -----------------------------------------------------------------------------------------
+        if samplecolumns >= 1:  # -----------------------------------------------------------------------------------------
             X = "A2"
             Y = "A6"
             p50.pick_up_tip()
             p50.aspirate(5, dilution_plate_1[X].center(), rate=0.5)
             p50.dispense(5, dilution_plate_1[Y].center(), rate=0.5)
             p50.drop_tip() if DRYRUN == "NO" else p50.return_tip()
-        if (
-            samplecolumns >= 2
-        ):  # -----------------------------------------------------------------------------------------
+        if samplecolumns >= 2:  # -----------------------------------------------------------------------------------------
             X = "A3"
             Y = "A7"
             p50.pick_up_tip()
             p50.aspirate(5, dilution_plate_1[X].center(), rate=0.5)
             p50.dispense(5, dilution_plate_1[Y].center(), rate=0.5)
             p50.drop_tip() if DRYRUN == "NO" else p50.return_tip()
-        if (
-            samplecolumns >= 3
-        ):  # -----------------------------------------------------------------------------------------
+        if samplecolumns >= 3:  # -----------------------------------------------------------------------------------------
             X = "A4"
             Y = "A8"
             p50.pick_up_tip()
@@ -325,9 +274,7 @@ def run(protocol: protocol_api.ProtocolContext):
             p50.drop_tip() if DRYRUN == "NO" else p50.return_tip()
 
         protocol.comment("--> Mixing")
-        if (
-            samplecolumns >= 1
-        ):  # -----------------------------------------------------------------------------------------
+        if samplecolumns >= 1:  # -----------------------------------------------------------------------------------------
             X = "A6"
             p1000.pick_up_tip()
             p1000.move_to(dilution_plate_1[X].bottom(z=p1000_offset_Temp))
@@ -337,9 +284,7 @@ def run(protocol: protocol_api.ProtocolContext):
             protocol.delay(seconds=2)
             p1000.default_speed = 400
             p1000.drop_tip() if DRYRUN == "NO" else p1000.return_tip()
-        if (
-            samplecolumns >= 2
-        ):  # -----------------------------------------------------------------------------------------
+        if samplecolumns >= 2:  # -----------------------------------------------------------------------------------------
             X = "A7"
             p1000.pick_up_tip()
             p1000.move_to(dilution_plate_1[X].bottom(z=p1000_offset_Temp))
@@ -349,9 +294,7 @@ def run(protocol: protocol_api.ProtocolContext):
             protocol.delay(seconds=2)
             p1000.default_speed = 400
             p1000.drop_tip() if DRYRUN == "NO" else p1000.return_tip()
-        if (
-            samplecolumns >= 3
-        ):  # -----------------------------------------------------------------------------------------
+        if samplecolumns >= 3:  # -----------------------------------------------------------------------------------------
             X = "A8"
             p1000.pick_up_tip()
             p1000.move_to(dilution_plate_1[X].bottom(z=p1000_offset_Temp))
@@ -370,76 +313,36 @@ def run(protocol: protocol_api.ProtocolContext):
             qPCRVol = 50
             p1000.pick_up_tip()
             p1000.aspirate((qPCRVol), PCR_1.bottom(z=p1000_offset_Thermo), rate=0.25)
-            p1000.dispense(
-                qPCRVol, dilution_plate_1["A9"].bottom(z=p1000_offset_Temp), rate=0.25
-            )
-            if (
-                samplecolumns >= 1
-            ):  # -----------------------------------------------------------------------------------------
+            p1000.dispense(qPCRVol, dilution_plate_1["A9"].bottom(z=p1000_offset_Temp), rate=0.25)
+            if samplecolumns >= 1:  # -----------------------------------------------------------------------------------------
                 X = "A10"
-                p1000.aspirate(
-                    (qPCRVol), PCR_1.bottom(z=p1000_offset_Thermo), rate=0.25
-                )
-                p1000.dispense(
-                    qPCRVol, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.25
-                )
-            if (
-                samplecolumns >= 2
-            ):  # -----------------------------------------------------------------------------------------
+                p1000.aspirate((qPCRVol), PCR_1.bottom(z=p1000_offset_Thermo), rate=0.25)
+                p1000.dispense(qPCRVol, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.25)
+            if samplecolumns >= 2:  # -----------------------------------------------------------------------------------------
                 X = "A11"
-                p1000.aspirate(
-                    (qPCRVol), PCR_1.bottom(z=p1000_offset_Thermo), rate=0.25
-                )
-                p1000.dispense(
-                    qPCRVol, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.25
-                )
-            if (
-                samplecolumns >= 3
-            ):  # -----------------------------------------------------------------------------------------
+                p1000.aspirate((qPCRVol), PCR_1.bottom(z=p1000_offset_Thermo), rate=0.25)
+                p1000.dispense(qPCRVol, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.25)
+            if samplecolumns >= 3:  # -----------------------------------------------------------------------------------------
                 X = "A12"
-                p1000.aspirate(
-                    (qPCRVol), PCR_1.bottom(z=p1000_offset_Thermo), rate=0.25
-                )
-                p1000.dispense(
-                    qPCRVol, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.25
-                )
+                p1000.aspirate((qPCRVol), PCR_1.bottom(z=p1000_offset_Thermo), rate=0.25)
+                p1000.dispense(qPCRVol, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.25)
             p1000.drop_tip() if DRYRUN == "NO" else p1000.return_tip()
 
             p1000.pick_up_tip()
             p1000.aspirate((qPCRVol), PCR_2.bottom(z=p1000_offset_Thermo), rate=0.25)
-            p1000.dispense(
-                qPCRVol, dilution_plate_2["A9"].bottom(z=p1000_offset_Deck), rate=0.25
-            )
-            if (
-                samplecolumns >= 1
-            ):  # -----------------------------------------------------------------------------------------
+            p1000.dispense(qPCRVol, dilution_plate_2["A9"].bottom(z=p1000_offset_Deck), rate=0.25)
+            if samplecolumns >= 1:  # -----------------------------------------------------------------------------------------
                 X = "A10"
-                p1000.aspirate(
-                    (qPCRVol), PCR_2.bottom(z=p1000_offset_Thermo), rate=0.25
-                )
-                p1000.dispense(
-                    qPCRVol, dilution_plate_2[X].bottom(z=p1000_offset_Deck), rate=0.25
-                )
-            if (
-                samplecolumns >= 2
-            ):  # -----------------------------------------------------------------------------------------
+                p1000.aspirate((qPCRVol), PCR_2.bottom(z=p1000_offset_Thermo), rate=0.25)
+                p1000.dispense(qPCRVol, dilution_plate_2[X].bottom(z=p1000_offset_Deck), rate=0.25)
+            if samplecolumns >= 2:  # -----------------------------------------------------------------------------------------
                 X = "A11"
-                p1000.aspirate(
-                    (qPCRVol), PCR_2.bottom(z=p1000_offset_Thermo), rate=0.25
-                )
-                p1000.dispense(
-                    qPCRVol, dilution_plate_2[X].bottom(z=p1000_offset_Deck), rate=0.25
-                )
-            if (
-                samplecolumns >= 3
-            ):  # -----------------------------------------------------------------------------------------
+                p1000.aspirate((qPCRVol), PCR_2.bottom(z=p1000_offset_Thermo), rate=0.25)
+                p1000.dispense(qPCRVol, dilution_plate_2[X].bottom(z=p1000_offset_Deck), rate=0.25)
+            if samplecolumns >= 3:  # -----------------------------------------------------------------------------------------
                 X = "A12"
-                p1000.aspirate(
-                    (qPCRVol), PCR_2.bottom(z=p1000_offset_Thermo), rate=0.25
-                )
-                p1000.dispense(
-                    qPCRVol, dilution_plate_2[X].bottom(z=p1000_offset_Deck), rate=0.25
-                )
+                p1000.aspirate((qPCRVol), PCR_2.bottom(z=p1000_offset_Thermo), rate=0.25)
+                p1000.dispense(qPCRVol, dilution_plate_2[X].bottom(z=p1000_offset_Deck), rate=0.25)
             p1000.drop_tip() if DRYRUN == "NO" else p1000.return_tip()
 
             protocol.comment("==============================================")
@@ -448,9 +351,7 @@ def run(protocol: protocol_api.ProtocolContext):
             SampleVol = 12.5
             p50.pick_up_tip()
             p50.aspirate(SampleVol, STD_1.bottom(z=p50_offset_Thermo), rate=0.5)
-            p50.dispense(
-                SampleVol, dilution_plate_1["A9"].bottom(z=p50_offset_Temp), rate=0.5
-            )
+            p50.dispense(SampleVol, dilution_plate_1["A9"].bottom(z=p50_offset_Temp), rate=0.5)
             p50.default_speed = 2.5
             p50.move_to(dilution_plate_1["A9"].center())
             protocol.delay(seconds=2)
@@ -459,9 +360,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
             p50.pick_up_tip()
             p50.aspirate(SampleVol, STD_2.bottom(z=p50_offset_Thermo), rate=0.5)
-            p50.dispense(
-                SampleVol, dilution_plate_2["A9"].bottom(z=p50_offset_Deck), rate=0.5
-            )
+            p50.dispense(SampleVol, dilution_plate_2["A9"].bottom(z=p50_offset_Deck), rate=0.5)
             p50.default_speed = 2.5
             p50.move_to(dilution_plate_2["A9"].center())
             protocol.delay(seconds=2)
@@ -471,92 +370,68 @@ def run(protocol: protocol_api.ProtocolContext):
             protocol.comment("==============================================")
             protocol.comment("--> Adding Diluted Sample to Mix")
             protocol.comment("==============================================")
-            if (
-                samplecolumns >= 1
-            ):  # -----------------------------------------------------------------------------------------
+            if samplecolumns >= 1:  # -----------------------------------------------------------------------------------------
                 X = "A6"
                 Y = "A10"
                 p50.pick_up_tip()
                 p50.aspirate(SampleVol, dilution_plate_1[X].center(), rate=0.5)
-                p50.dispense(
-                    SampleVol, dilution_plate_1[Y].bottom(z=p50_offset_Temp), rate=0.5
-                )
+                p50.dispense(SampleVol, dilution_plate_1[Y].bottom(z=p50_offset_Temp), rate=0.5)
                 p50.default_speed = 2.5
                 p50.move_to(dilution_plate_1[Y].center())
                 protocol.delay(seconds=2)
                 p50.default_speed = 400
                 p50.drop_tip() if DRYRUN == "NO" else p50.return_tip()
-            if (
-                samplecolumns >= 2
-            ):  # -----------------------------------------------------------------------------------------
+            if samplecolumns >= 2:  # -----------------------------------------------------------------------------------------
                 X = "A7"
                 Y = "A11"
                 p50.pick_up_tip()
                 p50.aspirate(SampleVol, dilution_plate_1[X].center(), rate=0.5)
-                p50.dispense(
-                    SampleVol, dilution_plate_1[Y].bottom(z=p50_offset_Temp), rate=0.5
-                )
+                p50.dispense(SampleVol, dilution_plate_1[Y].bottom(z=p50_offset_Temp), rate=0.5)
                 p50.default_speed = 2.5
                 p50.move_to(dilution_plate_1[Y].center())
                 protocol.delay(seconds=2)
                 p50.default_speed = 400
                 p50.drop_tip() if DRYRUN == "NO" else p50.return_tip()
-            if (
-                samplecolumns >= 3
-            ):  # -----------------------------------------------------------------------------------------
+            if samplecolumns >= 3:  # -----------------------------------------------------------------------------------------
                 X = "A8"
                 Y = "A12"
                 p50.pick_up_tip()
                 p50.aspirate(SampleVol, dilution_plate_1[X].center(), rate=0.5)
-                p50.dispense(
-                    SampleVol, dilution_plate_1[Y].bottom(z=p50_offset_Temp), rate=0.5
-                )
+                p50.dispense(SampleVol, dilution_plate_1[Y].bottom(z=p50_offset_Temp), rate=0.5)
                 p50.default_speed = 2.5
                 p50.move_to(dilution_plate_1[Y].center())
                 protocol.delay(seconds=2)
                 p50.default_speed = 400
                 p50.drop_tip() if DRYRUN == "NO" else p50.return_tip()
 
-            if (
-                samplecolumns >= 1
-            ):  # -----------------------------------------------------------------------------------------
+            if samplecolumns >= 1:  # -----------------------------------------------------------------------------------------
                 X = "A6"
                 Y = "A10"
                 p50.pick_up_tip()
                 p50.aspirate(SampleVol, dilution_plate_2[X].center(), rate=0.5)
-                p50.dispense(
-                    SampleVol, dilution_plate_2[Y].bottom(z=p50_offset_Deck), rate=0.5
-                )
+                p50.dispense(SampleVol, dilution_plate_2[Y].bottom(z=p50_offset_Deck), rate=0.5)
                 p50.default_speed = 2.5
                 p50.move_to(dilution_plate_2[Y].center())
                 protocol.delay(seconds=2)
                 p50.default_speed = 400
                 p50.drop_tip() if DRYRUN == "NO" else p50.return_tip()
-            if (
-                samplecolumns >= 2
-            ):  # -----------------------------------------------------------------------------------------
+            if samplecolumns >= 2:  # -----------------------------------------------------------------------------------------
                 X = "A7"
                 Y = "A11"
                 p50.pick_up_tip()
                 p50.aspirate(SampleVol, dilution_plate_2[X].center(), rate=0.5)
-                p50.dispense(
-                    SampleVol, dilution_plate_2[Y].bottom(z=p50_offset_Deck), rate=0.5
-                )
+                p50.dispense(SampleVol, dilution_plate_2[Y].bottom(z=p50_offset_Deck), rate=0.5)
                 p50.default_speed = 2.5
                 p50.move_to(dilution_plate_2[Y].center())
                 protocol.delay(seconds=2)
                 p50.default_speed = 400
                 p50.drop_tip() if DRYRUN == "NO" else p50.return_tip()
-            if (
-                samplecolumns >= 3
-            ):  # -----------------------------------------------------------------------------------------
+            if samplecolumns >= 3:  # -----------------------------------------------------------------------------------------
                 X = "A8"
                 Y = "A12"
                 p50.pick_up_tip()
                 p50.aspirate(SampleVol, dilution_plate_2[X].center(), rate=0.5)
-                p50.dispense(
-                    SampleVol, dilution_plate_2[Y].bottom(z=p50_offset_Deck), rate=0.5
-                )
+                p50.dispense(SampleVol, dilution_plate_2[Y].bottom(z=p50_offset_Deck), rate=0.5)
                 p50.default_speed = 2.5
                 p50.move_to(dilution_plate_2[Y].center())
                 protocol.delay(seconds=2)
@@ -573,75 +448,43 @@ def run(protocol: protocol_api.ProtocolContext):
                 Y2 = "A2"
                 Y3 = "A3"
                 p1000.pick_up_tip()
-                p1000.aspirate(
-                    60, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.5
-                )
+                p1000.aspirate(60, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.5)
                 p1000.dispense(20, qpcrplate_1[Y1].bottom(z=p1000_offset_Mag), rate=0.5)
                 p1000.dispense(20, qpcrplate_1[Y2].bottom(z=p1000_offset_Mag), rate=0.5)
                 p1000.dispense(20, qpcrplate_1[Y3].bottom(z=p1000_offset_Mag), rate=0.5)
                 p1000.drop_tip() if DRYRUN == "NO" else p1000.return_tip()
-                if (
-                    samplecolumns >= 1
-                ):  # -----------------------------------------------------------------------------------------
+                if samplecolumns >= 1:  # -----------------------------------------------------------------------------------------
                     X = "A10"
                     Y1 = "A4"
                     Y2 = "A5"
                     Y3 = "A6"
                     p1000.pick_up_tip()
-                    p1000.aspirate(
-                        60, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.5
-                    )
-                    p1000.dispense(
-                        20, qpcrplate_1[Y1].bottom(z=p1000_offset_Mag), rate=0.5
-                    )
-                    p1000.dispense(
-                        20, qpcrplate_1[Y2].bottom(z=p1000_offset_Mag), rate=0.5
-                    )
-                    p1000.dispense(
-                        20, qpcrplate_1[Y3].bottom(z=p1000_offset_Mag), rate=0.5
-                    )
+                    p1000.aspirate(60, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.5)
+                    p1000.dispense(20, qpcrplate_1[Y1].bottom(z=p1000_offset_Mag), rate=0.5)
+                    p1000.dispense(20, qpcrplate_1[Y2].bottom(z=p1000_offset_Mag), rate=0.5)
+                    p1000.dispense(20, qpcrplate_1[Y3].bottom(z=p1000_offset_Mag), rate=0.5)
                     p1000.drop_tip() if DRYRUN == "NO" else p1000.return_tip()
-                if (
-                    samplecolumns >= 2
-                ):  # -----------------------------------------------------------------------------------------
+                if samplecolumns >= 2:  # -----------------------------------------------------------------------------------------
                     X = "A11"
                     Y1 = "A7"
                     Y2 = "A8"
                     Y3 = "A9"
                     p1000.pick_up_tip()
-                    p1000.aspirate(
-                        60, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.5
-                    )
-                    p1000.dispense(
-                        20, qpcrplate_1[Y1].bottom(z=p1000_offset_Mag), rate=0.5
-                    )
-                    p1000.dispense(
-                        20, qpcrplate_1[Y2].bottom(z=p1000_offset_Mag), rate=0.5
-                    )
-                    p1000.dispense(
-                        20, qpcrplate_1[Y3].bottom(z=p1000_offset_Mag), rate=0.5
-                    )
+                    p1000.aspirate(60, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.5)
+                    p1000.dispense(20, qpcrplate_1[Y1].bottom(z=p1000_offset_Mag), rate=0.5)
+                    p1000.dispense(20, qpcrplate_1[Y2].bottom(z=p1000_offset_Mag), rate=0.5)
+                    p1000.dispense(20, qpcrplate_1[Y3].bottom(z=p1000_offset_Mag), rate=0.5)
                     p1000.drop_tip() if DRYRUN == "NO" else p1000.return_tip()
-                if (
-                    samplecolumns >= 3
-                ):  # -----------------------------------------------------------------------------------------
+                if samplecolumns >= 3:  # -----------------------------------------------------------------------------------------
                     X = "A12"
                     Y1 = "A10"
                     Y2 = "A11"
                     Y3 = "A12"
                     p1000.pick_up_tip()
-                    p1000.aspirate(
-                        60, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.5
-                    )
-                    p1000.dispense(
-                        20, qpcrplate_1[Y1].bottom(z=p1000_offset_Mag), rate=0.5
-                    )
-                    p1000.dispense(
-                        20, qpcrplate_1[Y2].bottom(z=p1000_offset_Mag), rate=0.5
-                    )
-                    p1000.dispense(
-                        20, qpcrplate_1[Y3].bottom(z=p1000_offset_Mag), rate=0.5
-                    )
+                    p1000.aspirate(60, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.5)
+                    p1000.dispense(20, qpcrplate_1[Y1].bottom(z=p1000_offset_Mag), rate=0.5)
+                    p1000.dispense(20, qpcrplate_1[Y2].bottom(z=p1000_offset_Mag), rate=0.5)
+                    p1000.dispense(20, qpcrplate_1[Y3].bottom(z=p1000_offset_Mag), rate=0.5)
                     p1000.drop_tip() if DRYRUN == "NO" else p1000.return_tip()
             if FORMAT == "384":
                 p1000.reset_tipracks()
@@ -660,9 +503,7 @@ def run(protocol: protocol_api.ProtocolContext):
                 p1000.pick_up_tip()
                 p1000.move_to(dilution_plate_1[X].bottom(z=p1000_offset_Temp))
                 p1000.mix(30, 58)
-                p1000.aspirate(
-                    62, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.25
-                )
+                p1000.aspirate(62, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.25)
                 protocol.delay(seconds=0.2)
                 p1000.move_to(qpcrplate_1[Y1].top(z=1.0))
                 protocol.delay(seconds=0.2)
@@ -703,9 +544,7 @@ def run(protocol: protocol_api.ProtocolContext):
                 p1000.default_speed = 400
 
                 p1000.drop_tip() if DRYRUN == "NO" else p1000.return_tip()
-                if (
-                    samplecolumns >= 1
-                ):  # -----------------------------------------------------------------------------------------
+                if samplecolumns >= 1:  # -----------------------------------------------------------------------------------------
                     X = "A10"
                     Y1 = "B1"
                     Y2 = "B2"
@@ -716,9 +555,7 @@ def run(protocol: protocol_api.ProtocolContext):
                     p1000.pick_up_tip()
                     p1000.move_to(dilution_plate_1[X].bottom(z=p1000_offset_Temp))
                     p1000.mix(30, 58)
-                    p1000.aspirate(
-                        62, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.25
-                    )
+                    p1000.aspirate(62, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.25)
                     protocol.delay(seconds=0.2)
                     p1000.move_to(qpcrplate_1[Y1].top(z=1.0))
                     protocol.delay(seconds=0.2)
@@ -760,9 +597,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
                     p1000.drop_tip() if DRYRUN == "NO" else p1000.return_tip()
 
-                if (
-                    samplecolumns >= 2
-                ):  # -----------------------------------------------------------------------------------------
+                if samplecolumns >= 2:  # -----------------------------------------------------------------------------------------
                     X = "A11"
                     Y1 = "A7"
                     Y2 = "A8"
@@ -773,9 +608,7 @@ def run(protocol: protocol_api.ProtocolContext):
                     p1000.pick_up_tip()
                     p1000.move_to(dilution_plate_1[X].bottom(z=p1000_offset_Temp))
                     p1000.mix(30, 58)
-                    p1000.aspirate(
-                        62, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.25
-                    )
+                    p1000.aspirate(62, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.25)
                     protocol.delay(seconds=0.2)
                     p1000.move_to(qpcrplate_1[Y1].top(z=1.0))
                     protocol.delay(seconds=0.2)
@@ -817,9 +650,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
                     p1000.drop_tip() if DRYRUN == "NO" else p1000.return_tip()
 
-                if (
-                    samplecolumns >= 3
-                ):  # -----------------------------------------------------------------------------------------
+                if samplecolumns >= 3:  # -----------------------------------------------------------------------------------------
                     X = "A12"
                     Y1 = "B7"
                     Y2 = "B8"
@@ -830,9 +661,7 @@ def run(protocol: protocol_api.ProtocolContext):
                     p1000.pick_up_tip()
                     p1000.move_to(dilution_plate_1[X].bottom(z=p1000_offset_Temp))
                     p1000.mix(30, 58)
-                    p1000.aspirate(
-                        62, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.25
-                    )
+                    p1000.aspirate(62, dilution_plate_1[X].bottom(z=p1000_offset_Temp), rate=0.25)
                     protocol.delay(seconds=0.2)
                     p1000.move_to(qpcrplate_1[Y1].top(z=1.0))
                     protocol.delay(seconds=0.2)
@@ -884,9 +713,7 @@ def run(protocol: protocol_api.ProtocolContext):
                 p1000.pick_up_tip()
                 p1000.move_to(dilution_plate_2[X].bottom(z=p1000_offset_Temp))
                 p1000.mix(30, 58)
-                p1000.aspirate(
-                    62, dilution_plate_2[X].bottom(z=p1000_offset_Temp), rate=0.25
-                )
+                p1000.aspirate(62, dilution_plate_2[X].bottom(z=p1000_offset_Temp), rate=0.25)
                 protocol.delay(seconds=0.2)
                 p1000.move_to(qpcrplate_2[Y1].top(z=1.0))
                 protocol.delay(seconds=0.2)
@@ -927,9 +754,7 @@ def run(protocol: protocol_api.ProtocolContext):
                 p1000.default_speed = 400
 
                 p1000.drop_tip() if DRYRUN == "NO" else p1000.return_tip()
-                if (
-                    samplecolumns >= 1
-                ):  # -----------------------------------------------------------------------------------------
+                if samplecolumns >= 1:  # -----------------------------------------------------------------------------------------
                     X = "A10"
                     Y1 = "B1"
                     Y2 = "B2"
@@ -940,9 +765,7 @@ def run(protocol: protocol_api.ProtocolContext):
                     p1000.pick_up_tip()
                     p1000.move_to(dilution_plate_2[X].bottom(z=p1000_offset_Temp))
                     p1000.mix(30, 58)
-                    p1000.aspirate(
-                        62, dilution_plate_2[X].bottom(z=p1000_offset_Temp), rate=0.25
-                    )
+                    p1000.aspirate(62, dilution_plate_2[X].bottom(z=p1000_offset_Temp), rate=0.25)
                     protocol.delay(seconds=0.2)
                     p1000.move_to(qpcrplate_2[Y1].top(z=1.0))
                     protocol.delay(seconds=0.2)
@@ -984,9 +807,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
                     p1000.drop_tip() if DRYRUN == "NO" else p1000.return_tip()
 
-                if (
-                    samplecolumns >= 2
-                ):  # -----------------------------------------------------------------------------------------
+                if samplecolumns >= 2:  # -----------------------------------------------------------------------------------------
                     X = "A11"
                     Y1 = "A7"
                     Y2 = "A8"
@@ -997,9 +818,7 @@ def run(protocol: protocol_api.ProtocolContext):
                     p1000.pick_up_tip()
                     p1000.move_to(dilution_plate_2[X].bottom(z=p1000_offset_Temp))
                     p1000.mix(30, 58)
-                    p1000.aspirate(
-                        62, dilution_plate_2[X].bottom(z=p1000_offset_Temp), rate=0.25
-                    )
+                    p1000.aspirate(62, dilution_plate_2[X].bottom(z=p1000_offset_Temp), rate=0.25)
                     protocol.delay(seconds=0.2)
                     p1000.move_to(qpcrplate_2[Y1].top(z=1.0))
                     protocol.delay(seconds=0.2)
@@ -1041,9 +860,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
                     p1000.drop_tip() if DRYRUN == "NO" else p1000.return_tip()
 
-                if (
-                    samplecolumns >= 3
-                ):  # -----------------------------------------------------------------------------------------
+                if samplecolumns >= 3:  # -----------------------------------------------------------------------------------------
                     X = "A12"
                     Y1 = "B7"
                     Y2 = "B8"
@@ -1054,9 +871,7 @@ def run(protocol: protocol_api.ProtocolContext):
                     p1000.pick_up_tip()
                     p1000.move_to(dilution_plate_2[X].bottom(z=p1000_offset_Temp))
                     p1000.mix(30, 58)
-                    p1000.aspirate(
-                        62, dilution_plate_2[X].bottom(z=p1000_offset_Temp), rate=0.25
-                    )
+                    p1000.aspirate(62, dilution_plate_2[X].bottom(z=p1000_offset_Temp), rate=0.25)
                     protocol.delay(seconds=0.2)
                     p1000.move_to(qpcrplate_2[Y1].top(z=1.0))
                     protocol.delay(seconds=0.2)

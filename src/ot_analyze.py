@@ -1,20 +1,15 @@
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import json
 import os
-from pathlib import Path
 import subprocess
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
 
 def analyze(directory: Path):
     start_time = time.time()  # Start timing
     analysis_file = os.path.join(directory, "analysis.json")
 
-    python_files = [
-        os.path.join(directory, file)
-        for file in os.listdir(directory)
-        if file.endswith(".py")
-    ]
+    python_files = [os.path.join(directory, file) for file in os.listdir(directory) if file.endswith(".py")]
     if not python_files:
         print(f"No python file in directory {directory}. Skipping...")
         return
@@ -25,13 +20,12 @@ def analyze(directory: Path):
     custom_labware = []
     if os.path.isdir(custom_labware_directory):
         custom_labware = [
-            os.path.join(custom_labware_directory, file)
-            for file in os.listdir(custom_labware_directory)
-            if file.endswith(".json")
+            os.path.join(custom_labware_directory, file) for file in os.listdir(custom_labware_directory) if file.endswith(".json")
         ]
 
     command = [
         "python",
+        "-I",
         "-m",
         "opentrons.cli",
         "analyze",
@@ -39,17 +33,7 @@ def analyze(directory: Path):
         analysis_file,
         python_file,
     ] + custom_labware
-    try:
-        subprocess.run(command, check=True)
-        # After running the command, read the analysis.json file to check for errors
-        if os.path.exists(analysis_file):
-            with open(analysis_file, "r") as f:
-                data = json.load(f)
-                if data.get("errors"):  # If the 'errors' key is not empty
-                    print(f"Errors found in directory: {directory}")
-    except subprocess.CalledProcessError as e:
-        print(f"Command '{' '.join(command)}' failed with error: {str(e)}")
-
+    subprocess.run(command, check=True)
     end_time = time.time()  # End timing
     print(f"Analysis of {directory} completed in {end_time - start_time:.2f} seconds")
 
