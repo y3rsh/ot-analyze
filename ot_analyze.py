@@ -45,10 +45,12 @@ def analyze(protocol_file: Path):
     except Exception as e:
         print(f"Error in analysis of {protocol_file}")
         write_failed_analysis(analysis_file, str(e))
-        return
-    end_time = time.time()  # End timing
-    print(f"Successful analysis of {protocol_file} completed in {end_time - start_time:.2f} seconds")
-    return end_time - start_time
+        end_time = time.time()
+        return end_time - start_time
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"Successful analysis of {protocol_file} completed in {elapsed_time:.2f} seconds")
+    return elapsed_time
 
 
 def run_analyze_in_parallel(protocol_files: List[Path]):
