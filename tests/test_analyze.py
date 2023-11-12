@@ -44,3 +44,13 @@ def test_analyze_ot2_negative():
 def test_analyze_flex_negative():
     analyze(td.FLEX_ERROR)
     check_errors_in_analysis(generate_analysis_path(td.FLEX_ERROR))
+
+
+def test_analyze_json_positive():
+    analyze(td.JSON_POSITIVE)
+    check_no_errors_in_analysis(generate_analysis_path(td.JSON_POSITIVE))
+
+
+def test_analyze_json_error():
+    analyze(td.JSON_ERROR)
+    check_errors_in_analysis(generate_analysis_path(td.JSON_ERROR))

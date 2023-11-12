@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 import time
@@ -22,10 +23,11 @@ def generate_analysis_path(protocol_file: Path) -> Path:
 def analyze(protocol_file: Path):
     start_time = time.time()  # Start timing
     analysis_file = generate_analysis_path(protocol_file)
-    custom_labware_directory = os.path.join(protocol_file.parent, "custom_labware")
+    custom_labware_directory = Path(protocol_file.parent, "custom_labware")
 
     custom_labware = []
-    if os.path.isdir(custom_labware_directory):
+    # PD protocols contain their own custom labware
+    if custom_labware_directory.is_dir() and protocol_file.suffix == ".py":
         custom_labware = [
             os.path.join(custom_labware_directory, file) for file in os.listdir(custom_labware_directory) if file.endswith(".json")
         ]
@@ -72,22 +74,47 @@ Analyzed in {clock_time:2f} seconds thanks to parallelization.
         )
 
 
-def find_python_files(directory: Path) -> List[Path]:
+def find_python_protocols(directory: Path) -> List[Path]:
     # Check if the provided path is a valid directory
+
     if not directory.is_dir():
         raise NotADirectoryError(f"The path {directory} is not a valid directory.")
 
     # Recursively find all .py files
     python_files = list(directory.rglob("*.py"))
-
+    # TODO: shallow test that they are valid protocol files
     return python_files
+
+
+def has_designer_application(json_file_path):
+    try:
+        with open(json_file_path, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            return "designerApplication" in data
+    except json.JSONDecodeError:
+        # Handle the exception if the file is not a valid JSON
+        print(f"Invalid JSON file: {json_file_path}")
+        return False
+
+
+def find_pd_protocols(directory: Path) -> List[Path]:
+    # Check if the provided path is a valid directory
+    if not directory.is_dir():
+        raise NotADirectoryError(f"The path {directory} is not a valid directory.")
+
+    # Recursively find all .json files
+    json_files = list(directory.rglob("*.json"))
+    filtered_json_files = [file for file in json_files if has_designer_application(file)]
+    return filtered_json_files
 
 
 def main():
     repo_relative_path = Path(os.getenv("GITHUB_WORKSPACE"), os.getenv("INPUT_BASE_DIRECTORY"))
-    print(f"Analyzing all .py files in {repo_relative_path}")
-    python_files = find_python_files(repo_relative_path)
-    run_analyze_in_parallel(python_files)
+    print(f"Analyzing all protocol files in {repo_relative_path}")
+    python_files = find_python_protocols(repo_relative_path)
+    pd_files = find_pd_protocols(repo_relative_path)
+    all_protocol_files = python_files + pd_files
+    run_analyze_in_parallel(all_protocol_files)
 
 
 if __name__ == "__main__":
