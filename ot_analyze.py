@@ -42,23 +42,32 @@ def analyze(protocol_file: Path):
     ] + custom_labware
     try:
         subprocess.run(command, capture_output=True, text=True, check=True)
-    except subprocess.CalledProcessError as e:
+    except Exception as e:
         print(f"Error in analysis of {protocol_file}")
         write_failed_analysis(analysis_file, str(e))
         return
     end_time = time.time()  # End timing
     print(f"Successful analysis of {protocol_file} completed in {end_time - start_time:.2f} seconds")
+    return end_time - start_time
 
 
 def run_analyze_in_parallel(protocol_files: List[Path]):
+    start_time = time.time()
     with ThreadPoolExecutor() as executor:
         futures = [executor.submit(analyze, file) for file in protocol_files]
-
+        time = 0
         for future in as_completed(futures):
             try:
-                future.result()  # This blocks until the future is done
+                time += future.result()  # This blocks until the future is done
             except Exception as e:
                 print(f"An error occurred: {e}")
+        end_time = time.time()
+        clock_time = end_time - start_time
+        print(
+            f"""{protocol_files.length} protocols with total analysis time of {time:.2f}
+            seconds analyzed in {clock_time:2f} seconds thanks to parallelization
+            """
+        )
 
 
 def find_python_files(directory: Path) -> List[Path]:

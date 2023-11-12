@@ -29,6 +29,9 @@ def create_failed_analysis(error_message: str) -> Dict[str, Any]:
 
 
 def write_failed_analysis(output_path: str, error_message: str) -> None:
+    if output_path.exists(".json"):
+        print(f"Analysis file {output_path} already exists, skipping")
+        return
     analysis = create_failed_analysis(error_message)
     with open(output_path, "w") as file:
         json.dump(analysis, file, indent=4)
