@@ -39,3 +39,8 @@ def test_analyze_flex_positive():
 def test_analyze_ot2_negative():
     analyze(td.ERROR)
     check_errors_in_analysis(generate_analysis_path(td.ERROR))
+
+
+def test_analyze_flex_negative():
+    analyze(td.FLEX_ERROR)
+    check_errors_in_analysis(generate_analysis_path(td.FLEX_ERROR))

@@ -44,7 +44,7 @@ def analyze(protocol_file: Path):
         subprocess.run(command, capture_output=True, text=True, check=True)
     except Exception as e:
         print(f"Error in analysis of {protocol_file}")
-        write_failed_analysis(analysis_file, str(e))
+        write_failed_analysis(analysis_file, e)
         end_time = time.time()
         return end_time - start_time
     end_time = time.time()
@@ -66,9 +66,9 @@ def run_analyze_in_parallel(protocol_files: List[Path]):
         end_time = time.time()
         clock_time = end_time - start_time
         print(
-            f"""{len(protocol_files)} protocols with total analysis time of {accumulated_time:.2f}
-            seconds analyzed in {clock_time:2f} seconds thanks to parallelization
-            """
+            f"""{len(protocol_files)} protocols with total analysis time of {accumulated_time:.2f}seconds.
+Analyzed in {clock_time:2f} seconds thanks to parallelization.
+"""
         )
 
 
