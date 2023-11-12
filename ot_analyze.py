@@ -66,7 +66,7 @@ def run_analyze_in_parallel(protocol_files: List[Path]):
         end_time = time.time()
         clock_time = end_time - start_time
         print(
-            f"""{protocol_files.len} protocols with total analysis time of {accumulated_time:.2f}
+            f"""{protocol_files.len()} protocols with total analysis time of {accumulated_time:.2f}
             seconds analyzed in {clock_time:2f} seconds thanks to parallelization
             """
         )
