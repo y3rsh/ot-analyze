@@ -55,16 +55,16 @@ def run_analyze_in_parallel(protocol_files: List[Path]):
     start_time = time.time()
     with ThreadPoolExecutor() as executor:
         futures = [executor.submit(analyze, file) for file in protocol_files]
-        time = 0
+        accumulated_time = 0
         for future in as_completed(futures):
             try:
-                time += future.result()  # This blocks until the future is done
+                accumulated_time += future.result()  # This blocks until the future is done
             except Exception as e:
                 print(f"An error occurred: {e}")
         end_time = time.time()
         clock_time = end_time - start_time
         print(
-            f"""{protocol_files.length} protocols with total analysis time of {time:.2f}
+            f"""{protocol_files.length} protocols with total analysis time of {accumulated_time:.2f}
             seconds analyzed in {clock_time:2f} seconds thanks to parallelization
             """
         )
