@@ -54,3 +54,7 @@ test: activate
 check: activate
 	python -m black --check .
 	python -m ruff .
+
+.PHONY: bump
+bump: activate
+	python bump_version.py
