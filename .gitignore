@@ -159,7 +159,7 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-test_data/**/*analysis.json
+tests/test_data/**/*analysis.json
 test-results.xml
 report.html
 result/

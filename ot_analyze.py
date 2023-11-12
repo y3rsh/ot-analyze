@@ -66,7 +66,7 @@ def run_analyze_in_parallel(protocol_files: List[Path]):
         end_time = time.time()
         clock_time = end_time - start_time
         print(
-            f"""{protocol_files.len()} protocols with total analysis time of {accumulated_time:.2f}
+            f"""{len(protocol_files)} protocols with total analysis time of {accumulated_time:.2f}
             seconds analyzed in {clock_time:2f} seconds thanks to parallelization
             """
         )
@@ -83,8 +83,12 @@ def find_python_files(directory: Path) -> List[Path]:
     return python_files
 
 
-if __name__ == "__main__":
+def main():
     repo_relative_path = Path(os.getenv("GITHUB_WORKSPACE"), os.getenv("INPUT_BASE_DIRECTORY"))
     print(f"Analyzing all .py files in {repo_relative_path}")
     python_files = find_python_files(repo_relative_path)
     run_analyze_in_parallel(python_files)
+
+
+if __name__ == "__main__":
+    main()

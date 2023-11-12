@@ -1,26 +1,9 @@
 import json
 from pathlib import Path
 
-import pytest
 from ot_analyze import analyze, generate_analysis_path
 
 import test_data.data as td
-
-
-def delete_analysis_files():
-    analysis_files = list(Path("test_data").rglob("**/*analysis.json"))
-    for analysis in analysis_files:
-        if analysis.exists():
-            try:
-                analysis.unlink()  # Deletes the file
-                print(f"Deleted {analysis.resolve()}")
-            except Exception as e:
-                print(f"Error deleting {analysis.resolve()}: {e}")
-
-
-@pytest.fixture(scope="session", autouse=True)
-def clear_analysis_files():
-    delete_analysis_files()
 
 
 def check_no_errors_in_analysis(analysis: Path):
