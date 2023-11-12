@@ -27,4 +27,4 @@ jobs:
       if: always()
       with:
         name: pytest-results
-        path: report.html
+        path: result

@@ -1,9 +1,9 @@
 from pathlib import Path
 from typing import List
 
-POSITIVE_OT2: Path = Path(Path(__file__).parent, "positive_ot2_no_labware")
-POSITIVE_FLEX: Path = Path(Path(__file__).parent, "positive_flex_no_labware")
-ERROR: Path = Path(Path(__file__).parent, "error")
+POSITIVE_OT2: Path = Path(Path(__file__).parent, "positive_ot2_no_labware", "protocol.py")
+POSITIVE_FLEX: Path = Path(Path(__file__).parent, "positive_flex_no_labware", "protocol.py")
+ERROR: Path = Path(Path(__file__).parent, "error", "protocol.py")
 NO_CI: Path = Path(Path(__file__).parent, "no_ci")
 NO_PROTOCOL: Path = Path(Path(__file__).parent, "no_protocol")
 

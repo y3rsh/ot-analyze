@@ -9,23 +9,23 @@ from ot_analyze import (
 import test_data.data as td
 
 
-def delete_analysis_files(directories):
-    for directory in directories:
-        analysis_file = Path(directory) / "analysis.json"
-        if analysis_file.exists():
+def delete_analysis_files():
+    analysis_files = list(Path("test_data").rglob("**/*analysis.json"))
+    for analysis in analysis_files:
+        if analysis.exists():
             try:
-                analysis_file.unlink()  # Deletes the file
-                print(f"Deleted 'analysis.json' in {directory}")
+                analysis.unlink()  # Deletes the file
+                print(f"Deleted {analysis.resolve()}")
             except Exception as e:
-                print(f"Error deleting 'analysis.json' in {directory}: {e}")
+                print(f"Error deleting {analysis.resolve()}: {e}")
 
 
 @pytest.fixture(scope="session", autouse=True)
 def clear_analysis_files():
-    delete_analysis_files(td.ALL)
+    delete_analysis_files()
 
 
-def check_no_errors_in_json(analysis: Path):
+def check_no_errors_in_analysis(analysis: Path):
     if not analysis.exists():
         raise FileNotFoundError(f"The file {analysis} does not exist")
 
@@ -35,7 +35,7 @@ def check_no_errors_in_json(analysis: Path):
         assert data["errors"] == [], f"Expected errors to be [], but found {data['errors']}"
 
 
-def check_errors_in_json(analysis: Path):
+def check_errors_in_analysis(analysis: Path):
     if not analysis.exists():
         raise FileNotFoundError(f"The file {analysis} does not exist")
 
@@ -47,14 +47,14 @@ def check_errors_in_json(analysis: Path):
 
 def test_analyze_ot2_positive():
     analyze(td.POSITIVE_OT2)
-    check_no_errors_in_json(Path(td.POSITIVE_OT2, "analysis.json"))
+    check_no_errors_in_analysis(Path(td.POSITIVE_OT2.parent, "analysis.json"))
 
 
 def test_analyze_flex_positive():
     analyze(td.POSITIVE_FLEX)
-    check_no_errors_in_json(Path(td.POSITIVE_FLEX, "analysis.json"))
+    check_no_errors_in_analysis(Path(td.POSITIVE_FLEX.parent, "analysis.json"))
 
 
 def test_analyze_ot2_negative():
     analyze(td.ERROR)
-    check_errors_in_json(Path(td.ERROR, "analysis.json"))
+    check_errors_in_analysis(Path(td.ERROR.parent, "analysis.json"))

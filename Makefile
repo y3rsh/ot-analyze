@@ -48,7 +48,7 @@ ot7.0.2: activate
 
 .PHONY: test
 test: activate
-	python -m pytest -vv --html=report.html tests/
+	python -m pytest -vv --html=report/report.html tests/
 
 .PHONY: check
 check: activate
