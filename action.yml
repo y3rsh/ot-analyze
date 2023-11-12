@@ -3,9 +3,9 @@ name: 'ot-analyze'
 author: 'y3rsh'
 description: 'A GitHub Action to analyze Opentrons protocols'
 inputs:
-  base_directory:
-    description: 'Root folder to search for protocols'
-    required: true
+  BASE_DIRECTORY:
+    description: 'relative path in the repository of the root folder in which to search for to search for protocols'
+    required: false
     default: 'protocols'
 runs:
   using: 'docker'

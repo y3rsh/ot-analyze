@@ -43,7 +43,7 @@ def analyze(protocol_file: Path):
     try:
         subprocess.run(command, capture_output=True, text=True, check=True)
     except subprocess.CalledProcessError as e:
-        print(f"Error in analyze for {protocol_file}: {e}")
+        print(f"Error in analysis of {protocol_file}")
         write_failed_analysis(analysis_file, str(e))
         return
     end_time = time.time()  # End timing
@@ -61,16 +61,7 @@ def run_analyze_in_parallel(protocol_files: List[Path]):
                 print(f"An error occurred: {e}")
 
 
-def find_python_files(path_like: str) -> List[Path]:
-    """
-    Takes a path-like string and returns a list of all .py files found
-    recursively in the given directory.
-
-    :param path_like: A path-like string.
-    :return: A list of Paths to the found .py files.
-    """
-    directory = Path(path_like)
-
+def find_python_files(directory: Path) -> List[Path]:
     # Check if the provided path is a valid directory
     if not directory.is_dir():
         raise NotADirectoryError(f"The path {directory} is not a valid directory.")
@@ -82,5 +73,7 @@ def find_python_files(path_like: str) -> List[Path]:
 
 
 if __name__ == "__main__":
-    python_files = find_python_files(".")
+    repo_relative_path = Path(os.getenv("GITHUB_WORKSPACE"), os.getenv("BASE_DIRECTORY"))
+    print(f"Analyzing all .py files in {repo_relative_path}")
+    python_files = find_python_files(repo_relative_path)
     run_analyze_in_parallel(python_files)
