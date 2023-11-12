@@ -41,13 +41,13 @@ def analyze(protocol_file: Path):
         protocol_file,
     ] + custom_labware
     try:
-        subprocess.run(command, check=True)
+        subprocess.run(command, capture_output=True, text=True, check=True)
     except subprocess.CalledProcessError as e:
-        print(f"Error running analysis: {e}")
+        print(f"Error in analyze for {protocol_file}: {e}")
         write_failed_analysis(analysis_file, str(e))
         return
     end_time = time.time()  # End timing
-    print(f"Analysis of {protocol_file} completed in {end_time - start_time:.2f} seconds")
+    print(f"Successful analysis of {protocol_file} completed in {end_time - start_time:.2f} seconds")
 
 
 def run_analyze_in_parallel(protocol_files: List[Path]):
