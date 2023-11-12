@@ -2,6 +2,11 @@
 name: 'ot-analyze'
 author: 'y3rsh'
 description: 'A GitHub Action to analyze Opentrons protocols'
+inputs:
+  base_directory:
+    description: 'Root folder to search for protocols'
+    required: true
+    default: 'protocols'
 runs:
   using: 'docker'
   image: 'docker://ghcr.io/y3rsh/ot-analyze'

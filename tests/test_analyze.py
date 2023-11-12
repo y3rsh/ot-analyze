@@ -25,7 +25,7 @@ def clear_analysis_files():
     delete_analysis_files(td.ALL)
 
 
-def check_errors_in_json(analysis: Path):
+def check_no_errors_in_json(analysis: Path):
     if not analysis.exists():
         raise FileNotFoundError(f"The file {analysis} does not exist")
 
@@ -35,11 +35,26 @@ def check_errors_in_json(analysis: Path):
         assert data["errors"] == [], f"Expected errors to be [], but found {data['errors']}"
 
 
+def check_errors_in_json(analysis: Path):
+    if not analysis.exists():
+        raise FileNotFoundError(f"The file {analysis} does not exist")
+
+    with open(analysis, "r") as file:
+        data = json.load(file)
+        assert "errors" in data, "The 'errors' key is not in the JSON data"
+        assert data["errors"] != [], "Expected errors, but found nothing"
+
+
 def test_analyze_ot2_positive():
     analyze(td.POSITIVE_OT2)
-    check_errors_in_json(Path(td.POSITIVE_OT2, "analysis.json"))
+    check_no_errors_in_json(Path(td.POSITIVE_OT2, "analysis.json"))
 
 
 def test_analyze_flex_positive():
     analyze(td.POSITIVE_FLEX)
-    check_errors_in_json(Path(td.POSITIVE_FLEX, "analysis.json"))
+    check_no_errors_in_json(Path(td.POSITIVE_FLEX, "analysis.json"))
+
+
+def test_analyze_ot2_negative():
+    analyze(td.ERROR)
+    check_errors_in_json(Path(td.ERROR, "analysis.json"))
