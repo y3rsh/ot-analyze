@@ -2,9 +2,7 @@ import json
 from pathlib import Path
 
 import pytest
-from ot_analyze import (
-    analyze,
-)
+from ot_analyze import analyze, generate_analysis_path
 
 import test_data.data as td
 
@@ -47,14 +45,14 @@ def check_errors_in_analysis(analysis: Path):
 
 def test_analyze_ot2_positive():
     analyze(td.POSITIVE_OT2)
-    check_no_errors_in_analysis(Path(td.POSITIVE_OT2.parent, "analysis.json"))
+    check_no_errors_in_analysis(generate_analysis_path(td.POSITIVE_OT2))
 
 
 def test_analyze_flex_positive():
     analyze(td.POSITIVE_FLEX)
-    check_no_errors_in_analysis(Path(td.POSITIVE_FLEX.parent, "analysis.json"))
+    check_no_errors_in_analysis(generate_analysis_path(td.POSITIVE_FLEX))
 
 
 def test_analyze_ot2_negative():
     analyze(td.ERROR)
-    check_errors_in_analysis(Path(td.ERROR.parent, "analysis.json"))
+    check_errors_in_analysis(generate_analysis_path(td.ERROR))

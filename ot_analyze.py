@@ -21,7 +21,7 @@ def generate_analysis_path(protocol_file: Path) -> Path:
 
 def analyze(protocol_file: Path):
     start_time = time.time()  # Start timing
-    analysis_file = os.path.join(protocol_file.parent, generate_analysis_path(protocol_file))
+    analysis_file = generate_analysis_path(protocol_file)
     custom_labware_directory = os.path.join(protocol_file.parent, "custom_labware")
 
     custom_labware = []
