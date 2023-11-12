@@ -73,7 +73,7 @@ def find_python_files(directory: Path) -> List[Path]:
 
 
 if __name__ == "__main__":
-    repo_relative_path = Path(os.getenv("GITHUB_WORKSPACE"), os.getenv("BASE_DIRECTORY"))
+    repo_relative_path = Path(os.getenv("GITHUB_WORKSPACE"), os.getenv("INPUT_BASE_DIRECTORY"))
     print(f"Analyzing all .py files in {repo_relative_path}")
     python_files = find_python_files(repo_relative_path)
     run_analyze_in_parallel(python_files)
