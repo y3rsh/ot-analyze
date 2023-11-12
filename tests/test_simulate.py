@@ -1,5 +1,5 @@
 import pytest
-from src.ot_simulate import simulate
+from ot_simulate import simulate
 
 import test_data.data as td
 

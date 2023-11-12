@@ -1,7 +1,7 @@
 import subprocess
 from pathlib import Path
 
-from src.build_info import BuildInfo
+from build_info import BuildInfo
 
 script_path = Path(Path(__file__).parent, "release-type.sh")
 

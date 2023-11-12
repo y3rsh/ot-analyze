@@ -23,7 +23,7 @@ exclude = '''
 line-length = 140
 target-version = "py310"
 ignore = ["E722"]
-src = ["*.py", "tests", "src", "tests/test_data/data.py"]
+src = ["*.py", "tests", "tests/test_data/data.py"]
 exclude = ["tests/test_data"]
 select = [
     "E",  # pycodestyle errors

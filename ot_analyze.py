@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import List
 
-from src.write_failed_analysis import write_failed_analysis
+from write_failed_analysis import write_failed_analysis
 
 
 def analyze(directory: Path):

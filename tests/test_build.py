@@ -1,6 +1,6 @@
 import pytest
-from src.build_info import BuildInfo, determine_build_type
-from src.run_bash import run_bash_script
+from build_info import BuildInfo, determine_build_type
+from run_bash import run_bash_script
 
 test_cases = [
     ("pull_request", "any_ref", BuildInfo(variants=[], build_type="develop")),

@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 import pytest
-from src.ot_analyze import (
+from ot_analyze import (
     analyze,
 )
 
