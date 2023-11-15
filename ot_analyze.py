@@ -1,6 +1,8 @@
 import json
 import os
+import shutil
 import subprocess
+import tempfile
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from enum import Enum, auto
@@ -8,6 +10,9 @@ from pathlib import Path
 from typing import List
 
 from write_failed_analysis import write_failed_analysis
+
+
+ZIP_FILE_BASENAME = "protocols_and_analyses"
 
 
 class OutputType(Enum):
@@ -128,14 +133,30 @@ def get_output_type() -> OutputType:
     return output_type
 
 
+
+def create_zip(directory_path: Path):
+    absolute_directory_path = directory_path.absolute()
+    try:
+        archive_name = shutil.make_archive(ZIP_FILE_BASENAME, 'zip', absolute_directory_path, absolute_directory_path)
+        print(f"Zipfile created and saved to: {absolute_directory_path / archive_name}")
+
+    except Exception as e:
+        print(f"Error: {e}")
+
+
 def main():
     repo_relative_path = Path(os.getenv("GITHUB_WORKSPACE"), os.getenv("INPUT_BASE_DIRECTORY"))
-    print(f"Using output type: {get_output_type().name.capitalize()}")
+    output_type = get_output_type()
+    print(f"Using output type: {output_type.name.lower()}")
     print(f"Analyzing all protocol files in {repo_relative_path}")
     python_files = find_python_protocols(repo_relative_path)
     pd_files = find_pd_protocols(repo_relative_path)
     all_protocol_files = python_files + pd_files
     run_analyze_in_parallel(all_protocol_files)
+
+    if output_type == OutputType.ZIP:
+        create_zip(repo_relative_path)
+
 
 
 if __name__ == "__main__":
