@@ -110,6 +110,7 @@ def find_pd_protocols(directory: Path) -> List[Path]:
 
 def main():
     repo_relative_path = Path(os.getenv("GITHUB_WORKSPACE"), os.getenv("INPUT_BASE_DIRECTORY"))
+    print("Hello World")
     print(f"Analyzing all protocol files in {repo_relative_path}")
     python_files = find_python_protocols(repo_relative_path)
     pd_files = find_pd_protocols(repo_relative_path)
