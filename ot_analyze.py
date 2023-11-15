@@ -3,10 +3,17 @@ import os
 import subprocess
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from enum import Enum, auto
 from pathlib import Path
 from typing import List
 
 from write_failed_analysis import write_failed_analysis
+
+
+class OutputType(Enum):
+    NONE = auto()
+    ZIP = auto()
+    MARKDOWN = auto()
 
 
 def generate_analysis_path(protocol_file: Path) -> Path:
@@ -107,10 +114,23 @@ def find_pd_protocols(directory: Path) -> List[Path]:
     filtered_json_files = [file for file in json_files if has_designer_application(file)]
     return filtered_json_files
 
+def get_output_type() -> OutputType:
+    """Get the output type from the environment variable OUTPUT_TYPE"""
+    if os.getenv("OUTPUT_TYPE") == "markdown":
+        output_type = OutputType.MARKDOWN
+    elif os.getenv("OUTPUT_TYPE") == "zip":
+        output_type = OutputType.ZIP
+    elif os.getenv("OUTPUT_TYPE") == "none":
+        output_type = OutputType.NONE
+    else:
+        print(f'Invalid OUTPUT_TYPE: {os.getenv("OUTPUT_TYPE")}. Defaulting to "none"')
+        output_type = OutputType.NONE
+    return output_type
+
 
 def main():
     repo_relative_path = Path(os.getenv("GITHUB_WORKSPACE"), os.getenv("INPUT_BASE_DIRECTORY"))
-    print("Hello World")
+    print(f"Using output type: {get_output_type().name.capitalize()}")
     print(f"Analyzing all protocol files in {repo_relative_path}")
     python_files = find_python_protocols(repo_relative_path)
     pd_files = find_pd_protocols(repo_relative_path)
