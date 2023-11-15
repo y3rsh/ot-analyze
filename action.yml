@@ -9,7 +9,8 @@ inputs:
     default: 'protocols'
 runs:
   using: 'docker'
-  image: 'docker://ghcr.io/y3rsh/ot-analyze:main'
+  # image: 'docker://ghcr.io/y3rsh/ot-analyze:main'
+  image: 'Dockerfile'  # For development
 branding:
   icon: 'check-square'
   color: 'white'
