@@ -171,5 +171,27 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import contextlib
+
+    @contextlib.contextmanager
+    def set_env(**environ: Dict[str, str]) -> Iterator[None]:
+        old_environ = dict(os.environ)
+        os.environ.update(environ)
+        try:
+            yield
+        finally:
+            os.environ.clear()
+            os.environ.update(old_environ)
+
+    environ_vars_to_add = {}
+    if os.getenv("GITHUB_WORKSPACE") is None:
+        environ_vars_to_add["GITHUB_WORKSPACE"] = str(Path(__file__).parent.absolute())
+
+    if os.getenv("INPUT_BASE_DIRECTORY") is None:
+        environ_vars_to_add["INPUT_BASE_DIRECTORY"] = "../ot-analyze-test/protocols"
+    if len(environ_vars_to_add) > 0:
+        print(f"Running with the following temporary environment variables: {environ_vars_to_add}")
+
+    with set_env(**environ_vars_to_add):
+        main()
 
