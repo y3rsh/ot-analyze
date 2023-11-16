@@ -7,17 +7,17 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
-from typing import List
+from typing import Any, Dict, Iterator, List
 
 from write_failed_analysis import write_failed_analysis
 
-ZIP_FILE_BASENAME = "protocols_and_analyses"
+FILE_BASENAME = "protocols_and_analyses"
 
 
-class OutputType(Enum):
-    NONE = auto()
-    ZIP = auto()
-    MARKDOWN = auto()
+class ProtocolType(Enum):
+    PROTOCOL_DESIGNER = auto()
+    PYTHON = auto()
+
 
 
 @dataclass
@@ -90,9 +90,6 @@ Analyzed in {clock_time:2f} seconds thanks to parallelization.
         )
 
 
-
-
-
 def has_designer_application(json_file_path):
     try:
         with open(json_file_path, "r", encoding="utf-8") as file:
@@ -133,25 +130,10 @@ def find_protocol_paths(repo_relative_path: Path) -> List[ProtocolPaths]:
         in find_python_protocols(repo_relative_path) + find_pd_protocols(repo_relative_path)
     ]
 
-def get_output_type() -> OutputType:
-    """Get the output type from the environment variable OUTPUT_TYPE"""
-    if os.getenv("OUTPUT_TYPE") == "markdown":
-        output_type = OutputType.MARKDOWN
-    elif os.getenv("OUTPUT_TYPE") == "zip":
-        output_type = OutputType.ZIP
-    elif os.getenv("OUTPUT_TYPE") == "none":
-        output_type = OutputType.NONE
-    else:
-        print(f'Invalid OUTPUT_TYPE: {os.getenv("OUTPUT_TYPE")}. Defaulting to "none"')
-        output_type = OutputType.NONE
-    return output_type
-
-
-
 def create_zip(directory_path: Path):
     absolute_directory_path = directory_path.absolute()
     try:
-        archive_name = shutil.make_archive(ZIP_FILE_BASENAME, 'zip', absolute_directory_path, absolute_directory_path)
+        archive_name = shutil.make_archive(FILE_BASENAME, 'zip', absolute_directory_path, absolute_directory_path)
         print(f"Zipfile created and saved to: {absolute_directory_path / archive_name}")
 
     except Exception as e:
@@ -160,14 +142,10 @@ def create_zip(directory_path: Path):
 
 def main():
     repo_relative_path = Path(os.getenv("GITHUB_WORKSPACE"), os.getenv("INPUT_BASE_DIRECTORY"))
-    output_type = get_output_type()
-    print(f"Using output type: {output_type.name.lower()}")
     print(f"Analyzing all protocol files in {repo_relative_path}")
     protocol_paths = find_protocol_paths(repo_relative_path)
     run_analyze_in_parallel(protocol_paths)
-
-    if output_type == OutputType.ZIP:
-        create_zip(repo_relative_path)
+    create_zip(repo_relative_path)
 
 
 if __name__ == "__main__":
