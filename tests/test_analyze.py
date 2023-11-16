@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from ot_analyze import analyze, generate_analysis_path
+from ot_analyze import analyze, generate_analysis_path, ProtocolPaths
 
 import test_data.data as td
 
@@ -27,30 +27,36 @@ def check_errors_in_analysis(analysis: Path):
 
 
 def test_analyze_ot2_positive():
-    analyze(td.POSITIVE_OT2)
-    check_no_errors_in_analysis(generate_analysis_path(td.POSITIVE_OT2))
+    protocol_path = ProtocolPaths(td.POSITIVE_OT2, generate_analysis_path(td.POSITIVE_OT2))
+    analyze(protocol_path)
+    check_no_errors_in_analysis(protocol_path.analysis_file)
 
 
 def test_analyze_flex_positive():
-    analyze(td.POSITIVE_FLEX)
-    check_no_errors_in_analysis(generate_analysis_path(td.POSITIVE_FLEX))
+    protocol_path = ProtocolPaths(td.POSITIVE_FLEX, generate_analysis_path(td.POSITIVE_FLEX))
+    analyze(protocol_path)
+    check_no_errors_in_analysis(protocol_path.analysis_file)
 
 
 def test_analyze_ot2_negative():
-    analyze(td.ERROR)
-    check_errors_in_analysis(generate_analysis_path(td.ERROR))
+    protocol_path = ProtocolPaths(td.ERROR, generate_analysis_path(td.ERROR))
+    analyze(protocol_path)
+    check_errors_in_analysis(protocol_path.analysis_file)
 
 
 def test_analyze_flex_negative():
-    analyze(td.FLEX_ERROR)
-    check_errors_in_analysis(generate_analysis_path(td.FLEX_ERROR))
+    protocol_path = ProtocolPaths(td.FLEX_ERROR, generate_analysis_path(td.FLEX_ERROR))
+    analyze(protocol_path)
+    check_errors_in_analysis(protocol_path.analysis_file)
 
 
 def test_analyze_json_positive():
-    analyze(td.JSON_POSITIVE)
-    check_no_errors_in_analysis(generate_analysis_path(td.JSON_POSITIVE))
+    protocol_path = ProtocolPaths(td.JSON_POSITIVE, generate_analysis_path(td.JSON_POSITIVE))
+    analyze(protocol_path)
+    check_no_errors_in_analysis(protocol_path.analysis_file)
 
 
 def test_analyze_json_error():
-    analyze(td.JSON_ERROR)
-    check_errors_in_analysis(generate_analysis_path(td.JSON_ERROR))
+    protocol_path = ProtocolPaths(td.JSON_ERROR, generate_analysis_path(td.JSON_ERROR))
+    analyze(protocol_path)
+    check_errors_in_analysis(protocol_path.analysis_file)

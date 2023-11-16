@@ -2,15 +2,14 @@ import json
 import os
 import shutil
 import subprocess
-import tempfile
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
 from typing import List
 
 from write_failed_analysis import write_failed_analysis
-
 
 ZIP_FILE_BASENAME = "protocols_and_analyses"
 
@@ -19,6 +18,12 @@ class OutputType(Enum):
     NONE = auto()
     ZIP = auto()
     MARKDOWN = auto()
+
+
+@dataclass
+class ProtocolPaths:
+    protocol_file: Path
+    analysis_file: Path
 
 
 def generate_analysis_path(protocol_file: Path) -> Path:
@@ -32,14 +37,13 @@ def generate_analysis_path(protocol_file: Path) -> Path:
     return Path(protocol_file.parent, f"{protocol_file.stem}_analysis.json")
 
 
-def analyze(protocol_file: Path):
+def analyze(protocol_path: ProtocolPaths) -> float:
     start_time = time.time()  # Start timing
-    analysis_file = generate_analysis_path(protocol_file)
-    custom_labware_directory = Path(protocol_file.parent, "custom_labware")
+    custom_labware_directory = Path(protocol_path.protocol_file.parent, "custom_labware")
 
     custom_labware = []
     # PD protocols contain their own custom labware
-    if custom_labware_directory.is_dir() and protocol_file.suffix == ".py":
+    if custom_labware_directory.is_dir() and protocol_path.protocol_file.suffix == ".py":
         custom_labware = [
             os.path.join(custom_labware_directory, file) for file in os.listdir(custom_labware_directory) if file.endswith(".json")
         ]
@@ -51,23 +55,23 @@ def analyze(protocol_file: Path):
         "opentrons.cli",
         "analyze",
         "--json-output",
-        analysis_file,
-        protocol_file,
+        protocol_path.analysis_file,
+        protocol_path.protocol_file,
     ] + custom_labware
     try:
         subprocess.run(command, capture_output=True, text=True, check=True)
     except Exception as e:
-        print(f"Error in analysis of {protocol_file}")
-        write_failed_analysis(analysis_file, e)
+        print(f"Error in analysis of {protocol_path.protocol_file}")
+        write_failed_analysis(protocol_path.analysis_file, e)
         end_time = time.time()
         return end_time - start_time
     end_time = time.time()
     elapsed_time = end_time - start_time
-    print(f"Successful analysis of {protocol_file} completed in {elapsed_time:.2f} seconds")
+    print(f"Successful analysis of {protocol_path.protocol_file} completed in {elapsed_time:.2f} seconds")
     return elapsed_time
 
 
-def run_analyze_in_parallel(protocol_files: List[Path]):
+def run_analyze_in_parallel(protocol_files: List[ProtocolPaths]):
     start_time = time.time()
     with ThreadPoolExecutor() as executor:
         futures = [executor.submit(analyze, file) for file in protocol_files]
@@ -86,16 +90,7 @@ Analyzed in {clock_time:2f} seconds thanks to parallelization.
         )
 
 
-def find_python_protocols(directory: Path) -> List[Path]:
-    # Check if the provided path is a valid directory
 
-    if not directory.is_dir():
-        raise NotADirectoryError(f"The path {directory} is not a valid directory.")
-
-    # Recursively find all .py files
-    python_files = list(directory.rglob("*.py"))
-    # TODO: shallow test that they are valid protocol files
-    return python_files
 
 
 def has_designer_application(json_file_path):
@@ -109,15 +104,34 @@ def has_designer_application(json_file_path):
         return False
 
 
-def find_pd_protocols(directory: Path) -> List[Path]:
-    # Check if the provided path is a valid directory
-    if not directory.is_dir():
-        raise NotADirectoryError(f"The path {directory} is not a valid directory.")
 
-    # Recursively find all .json files
-    json_files = list(directory.rglob("*.json"))
-    filtered_json_files = [file for file in json_files if has_designer_application(file)]
-    return filtered_json_files
+
+def find_protocol_paths(repo_relative_path: Path) -> List[ProtocolPaths]:
+    def find_pd_protocols(directory: Path) -> List[Path]:
+    # Check if the provided path is a valid directory
+        if not directory.is_dir():
+            raise NotADirectoryError(f"The path {directory} is not a valid directory.")
+
+        # Recursively find all .json files
+        json_files = list(directory.rglob("*.json"))
+        filtered_json_files = [file for file in json_files if has_designer_application(file)]
+
+        return filtered_json_files
+
+    def find_python_protocols(directory: Path) -> List[Path]:
+        # Check if the provided path is a valid directory
+        if not directory.is_dir():
+            raise NotADirectoryError(f"The path {directory} is not a valid directory.")
+
+        # Recursively find all .py files
+        python_files = list(directory.rglob("*.py"))
+        # TODO: shallow test that they are valid protocol files
+        return python_files
+    return [
+        ProtocolPaths(protocol_file, generate_analysis_path(protocol_file))
+        for protocol_file
+        in find_python_protocols(repo_relative_path) + find_pd_protocols(repo_relative_path)
+    ]
 
 def get_output_type() -> OutputType:
     """Get the output type from the environment variable OUTPUT_TYPE"""
@@ -149,15 +163,13 @@ def main():
     output_type = get_output_type()
     print(f"Using output type: {output_type.name.lower()}")
     print(f"Analyzing all protocol files in {repo_relative_path}")
-    python_files = find_python_protocols(repo_relative_path)
-    pd_files = find_pd_protocols(repo_relative_path)
-    all_protocol_files = python_files + pd_files
-    run_analyze_in_parallel(all_protocol_files)
+    protocol_paths = find_protocol_paths(repo_relative_path)
+    run_analyze_in_parallel(protocol_paths)
 
     if output_type == OutputType.ZIP:
         create_zip(repo_relative_path)
 
 
-
 if __name__ == "__main__":
     main()
+
