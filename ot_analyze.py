@@ -12,7 +12,8 @@ from typing import Any, Dict, Iterator, List
 
 from write_failed_analysis import write_failed_analysis
 
-FILE_BASENAME = "protocols_and_analyses"
+ZIP_FILE_BASENAME = "protocols_and_analyses"
+MARKDOWN_FILE_BASENAME = "summary"
 
 SUCCESS_COLOR = "#7beb73"
 FAILURE_COLOR = "#eb7373"
@@ -210,7 +211,7 @@ def find_protocol_paths(repo_relative_path: Path) -> List[ProtocolPaths]:
 def create_zip(directory_path: Path):
     absolute_directory_path = directory_path.absolute()
     try:
-        archive_name = shutil.make_archive(FILE_BASENAME, 'zip', absolute_directory_path, absolute_directory_path)
+        archive_name = shutil.make_archive(ZIP_FILE_BASENAME, 'zip', absolute_directory_path, absolute_directory_path)
         print(f"Zipfile created and saved to: {absolute_directory_path / archive_name}")
 
     except Exception as e:
@@ -242,9 +243,9 @@ def create_markdown(protocol_paths: List[ProtocolPaths]) -> None:
     markdown_content = MARKDOWN_TEMPLATE.format(
         results="\n".join([generate_result(protocol_path) for protocol_path in protocol_paths]),
     )
-    markdown_file_name = f"{FILE_BASENAME}.md"
+    markdown_file_name = f"{MARKDOWN_FILE_BASENAME}.md"
     absolute_directory_path = Path.cwd()
-    with open(FILE_BASENAME + ".md", "w") as file:
+    with open(markdown_file_name, "w") as file:
         file.write(markdown_content)
         print(f"Markdown file created and saved to: {absolute_directory_path / markdown_file_name}")
 

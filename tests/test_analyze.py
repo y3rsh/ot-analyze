@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from ot_analyze import analyze, generate_analysis_path, ProtocolPaths
+from ot_analyze import ProtocolPaths, analyze, generate_analysis_path
 
 import test_data.data as td
 

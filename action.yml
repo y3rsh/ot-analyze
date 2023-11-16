@@ -7,15 +7,7 @@ inputs:
     description: 'relative path in the repository of the root folder in which to search for to search for protocols'
     required: false
     default: 'protocols'
-  OUTPUT_TYPE:
-    type: choice
-    description: 'type of output the action generates'
-    required: false
-    default: 'none'
-    options:
-      - 'none'
-      - 'zip'
-      - 'markdown'
+    type: string
 runs:
   using: 'docker'
   # image: 'docker://ghcr.io/y3rsh/ot-analyze:main'
