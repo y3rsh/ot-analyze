@@ -1,5 +1,6 @@
 import json
 import os
+import pprint
 import shutil
 import subprocess
 import time
@@ -13,17 +14,91 @@ from write_failed_analysis import write_failed_analysis
 
 FILE_BASENAME = "protocols_and_analyses"
 
+SUCCESS_COLOR = "#7beb73"
+FAILURE_COLOR = "#eb7373"
+
+MARKDOWN_TEMPLATE = """
+# OT-Analyze Test Results
+
+## Result Breakdown
+
+Below is a list of protocols and their analysis results.
+
+{results}
+
+"""
+
+ANALYSIS_ERROR_TEMPLATE = """
+
+Analysis Error: {analysis_error}
+
+"""
+
+RESULTS_TEMPLATE = """
+<details>
+
+<summary>{protocol_file_name} <span style="color: {summary_color};">[ {pass_or_fail} ]</span></summary>
+
+Protocol Type: {protocol_type}
+
+Analysis Execution Time: {execution_time:.2f} seconds
+
+{analysis_error}
+
+</details>
+"""
+
 
 class ProtocolType(Enum):
     PROTOCOL_DESIGNER = auto()
     PYTHON = auto()
 
+class AnalysisResult(Enum):
+    PASS = auto()
+    FAIL = auto()
 
 
 @dataclass
 class ProtocolPaths:
     protocol_file: Path
     analysis_file: Path
+    analysis_execution_time: float | None = None
+
+    @property
+    def _analysis_file_content(self) -> Dict[str, Any]:
+        with open(self.analysis_file.absolute(), "r") as file:
+            return json.load(file)
+
+    @property
+    def _analysis_success(self) -> bool:
+        return self._analysis_file_content["errors"] == []
+
+    @property
+    def analysis_error(self) -> str:
+        return self._analysis_file_content["errors"]
+
+    @property
+    def analysis_result(self) -> AnalysisResult:
+        return (
+            AnalysisResult.PASS
+            if self._analysis_success
+            else AnalysisResult.FAIL
+        )
+
+    @property
+    def protocol_file_name(self) -> str:
+        return self.protocol_file.name
+
+    @property
+    def protocol_type(self) -> str:
+        return (
+            ProtocolType.PYTHON
+            if self.protocol_file.suffix == ".py"
+            else ProtocolType.PROTOCOL_DESIGNER
+        ).name.title()
+
+    def set_analysis_execution_time(self, analysis_execution_time: float) -> None:
+        self.analysis_execution_time = analysis_execution_time
 
 
 def generate_analysis_path(protocol_file: Path) -> Path:
@@ -64,9 +139,11 @@ def analyze(protocol_path: ProtocolPaths) -> float:
         print(f"Error in analysis of {protocol_path.protocol_file}")
         write_failed_analysis(protocol_path.analysis_file, e)
         end_time = time.time()
+        protocol_path.set_analysis_execution_time(end_time)
         return end_time - start_time
     end_time = time.time()
     elapsed_time = end_time - start_time
+    protocol_path.set_analysis_execution_time(elapsed_time)
     print(f"Successful analysis of {protocol_path.protocol_file} completed in {elapsed_time:.2f} seconds")
     return elapsed_time
 
@@ -139,6 +216,38 @@ def create_zip(directory_path: Path):
     except Exception as e:
         print(f"Error: {e}")
 
+def create_markdown(protocol_paths: List[ProtocolPaths]) -> None:
+    def generate_result(protocol_path: ProtocolPaths) -> str:
+        if protocol_path.analysis_result == AnalysisResult.PASS:
+            summary_color = SUCCESS_COLOR
+            analysis_error = ""
+        else:
+            summary_color = FAILURE_COLOR
+            analysis_error = ANALYSIS_ERROR_TEMPLATE.format(
+                analysis_error="\n".join(
+                    error["detail"]
+                    for error
+                    in protocol_path.analysis_error
+                )
+            )
+
+        return RESULTS_TEMPLATE.format(
+            protocol_file_name=protocol_path.protocol_file_name,
+            protocol_type=protocol_path.protocol_type,
+            summary_color=summary_color,
+            pass_or_fail=protocol_path.analysis_result.name.upper(),
+            analysis_error=analysis_error,
+            execution_time=protocol_path.analysis_execution_time,
+        )
+    markdown_content = MARKDOWN_TEMPLATE.format(
+        results="\n".join([generate_result(protocol_path) for protocol_path in protocol_paths]),
+    )
+    markdown_file_name = f"{FILE_BASENAME}.md"
+    absolute_directory_path = Path.cwd()
+    with open(FILE_BASENAME + ".md", "w") as file:
+        file.write(markdown_content)
+        print(f"Markdown file created and saved to: {absolute_directory_path / markdown_file_name}")
+
 
 def main():
     repo_relative_path = Path(os.getenv("GITHUB_WORKSPACE"), os.getenv("INPUT_BASE_DIRECTORY"))
@@ -146,6 +255,7 @@ def main():
     protocol_paths = find_protocol_paths(repo_relative_path)
     run_analyze_in_parallel(protocol_paths)
     create_zip(repo_relative_path)
+    create_markdown(protocol_paths)
 
 
 if __name__ == "__main__":
