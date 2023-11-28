@@ -1,6 +1,5 @@
 import json
 import os
-import pprint
 import shutil
 import subprocess
 import time
@@ -54,6 +53,7 @@ class ProtocolType(Enum):
     PROTOCOL_DESIGNER = auto()
     PYTHON = auto()
 
+
 class AnalysisResult(Enum):
     PASS = auto()
     FAIL = auto()
@@ -80,11 +80,7 @@ class ProtocolPaths:
 
     @property
     def analysis_result(self) -> AnalysisResult:
-        return (
-            AnalysisResult.PASS
-            if self._analysis_success
-            else AnalysisResult.FAIL
-        )
+        return AnalysisResult.PASS if self._analysis_success else AnalysisResult.FAIL
 
     @property
     def protocol_file_name(self) -> str:
@@ -92,11 +88,7 @@ class ProtocolPaths:
 
     @property
     def protocol_type(self) -> str:
-        return (
-            ProtocolType.PYTHON
-            if self.protocol_file.suffix == ".py"
-            else ProtocolType.PROTOCOL_DESIGNER
-        ).name.title()
+        return (ProtocolType.PYTHON if self.protocol_file.suffix == ".py" else ProtocolType.PROTOCOL_DESIGNER).name.title()
 
     def set_analysis_execution_time(self, analysis_execution_time: float) -> None:
         self.analysis_execution_time = analysis_execution_time
@@ -179,11 +171,9 @@ def has_designer_application(json_file_path):
         return False
 
 
-
-
 def find_protocol_paths(repo_relative_path: Path) -> List[ProtocolPaths]:
     def find_pd_protocols(directory: Path) -> List[Path]:
-    # Check if the provided path is a valid directory
+        # Check if the provided path is a valid directory
         if not directory.is_dir():
             raise NotADirectoryError(f"The path {directory} is not a valid directory.")
 
@@ -202,20 +192,22 @@ def find_protocol_paths(repo_relative_path: Path) -> List[ProtocolPaths]:
         python_files = list(directory.rglob("*.py"))
         # TODO: shallow test that they are valid protocol files
         return python_files
+
     return [
         ProtocolPaths(protocol_file, generate_analysis_path(protocol_file))
-        for protocol_file
-        in find_python_protocols(repo_relative_path) + find_pd_protocols(repo_relative_path)
+        for protocol_file in find_python_protocols(repo_relative_path) + find_pd_protocols(repo_relative_path)
     ]
+
 
 def create_zip(directory_path: Path):
     absolute_directory_path = directory_path.absolute()
     try:
-        archive_name = shutil.make_archive(ZIP_FILE_BASENAME, 'zip', absolute_directory_path, absolute_directory_path)
+        archive_name = shutil.make_archive(ZIP_FILE_BASENAME, "zip", absolute_directory_path, absolute_directory_path)
         print(f"Zipfile created and saved to: {absolute_directory_path / archive_name}")
 
     except Exception as e:
         print(f"Error: {e}")
+
 
 def create_markdown(protocol_paths: List[ProtocolPaths]) -> None:
     def generate_result(protocol_path: ProtocolPaths) -> str:
@@ -225,11 +217,7 @@ def create_markdown(protocol_paths: List[ProtocolPaths]) -> None:
         else:
             summary_color = FAILURE_COLOR
             analysis_error = ANALYSIS_ERROR_TEMPLATE.format(
-                analysis_error="\n".join(
-                    error["detail"]
-                    for error
-                    in protocol_path.analysis_error
-                )
+                analysis_error="\n".join(error["detail"] for error in protocol_path.analysis_error)
             )
 
         return RESULTS_TEMPLATE.format(
@@ -240,6 +228,7 @@ def create_markdown(protocol_paths: List[ProtocolPaths]) -> None:
             analysis_error=analysis_error,
             execution_time=protocol_path.analysis_execution_time,
         )
+
     markdown_content = MARKDOWN_TEMPLATE.format(
         results="\n".join([generate_result(protocol_path) for protocol_path in protocol_paths]),
     )
@@ -283,4 +272,3 @@ if __name__ == "__main__":
 
     with set_env(**environ_vars_to_add):
         main()
-

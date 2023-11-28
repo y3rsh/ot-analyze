@@ -32,9 +32,13 @@ def bump_version(tag):
 def main():
     latest_tag = get_latest_tag()
     new_version = bump_version(latest_tag)
-
     # Execute git commands
     subprocess.run(["git", "add", "."], check=True)
+    try:
+        subprocess.run(["git", "diff", "--quiet"], check=True)
+    except subprocess.CalledProcessError:
+        print("No changes to commit")
+        exit(0)
     subprocess.run(["git", "commit", "-m", new_version], check=True)
     subprocess.run(["git", "tag", "-a", "-m", new_version, new_version], check=True)
     subprocess.run(["git", "push", "--follow-tags"], check=True)
