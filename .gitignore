@@ -163,3 +163,7 @@ tests/test_data/**/*analysis.json
 test-results.xml
 report.html
 result/
+
+# Generated Report Files
+protocols_and_analyses.md
+protocols_and_analyses.zip
