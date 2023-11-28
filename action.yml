@@ -10,8 +10,7 @@ inputs:
     type: string
 runs:
   using: 'docker'
-  # image: 'docker://ghcr.io/y3rsh/ot-analyze:main'
-  image: 'Dockerfile'  # For development
+  image: 'docker://ghcr.io/y3rsh/ot-analyze:main'
 branding:
   icon: 'check-square'
   color: 'white'
